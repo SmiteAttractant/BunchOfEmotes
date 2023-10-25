@@ -43,7 +43,7 @@ namespace BunchOfEmotes
         public static float timer = 0.0f;
         public static bool keyIsPressed = false;
         public static bool inAnimation = false;
-        public static string customListKey = "Do you want a custom list ?";
+        public static string customListKey = "Do you want to use a custom list ?";
         public static string myCustomListKey = "Enter your custom list";
 
         private static readonly Harmony Harmony = new Harmony(MyGUID);
@@ -64,7 +64,7 @@ namespace BunchOfEmotes
             KeyboardConfirm = Config.Bind("Open menu / Confirm", KeyboardConfirmKey, new KeyboardShortcut(KeyCode.N));
             KeyboardConfirm = Config.Bind("Custom list", KeyboardConfirmKey, new KeyboardShortcut(KeyCode.N));
             customList = Config.Bind("Custom list", customListKey, defaultValue: false, "if you want a custom list of emotes");
-            myCustomList = Config.Bind("Custom list", myCustomListKey, "", "Your custom list of animations they must be without any spaces and separated by ,");
+            myCustomList = Config.Bind("Custom list", myCustomListKey, "jumpNEW,fallNEW,wallRunLeftNEW,grafSlashUP_RIGHT", "Your custom list of animations they must be without any spaces and separated by ,");
 
             KeyboardPlus.SettingChanged += ConfigSettingChanged;
 
