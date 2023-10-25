@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Reptile;
+using UnityEngine;
 
 namespace BunchOfEmotes.Patches
 {
@@ -23,6 +24,21 @@ namespace BunchOfEmotes.Patches
                 BunchOfEmotesPlugin.player = __instance;
             }
             return true;
+        }
+
+        [HarmonyPatch(nameof(Player.PlayAnim))]
+        [HarmonyPostfix]
+        public static void PlayAnim(Player __instance)
+        {
+            int childcount = __instance.transform.GetChild(0).childCount;
+            //BunchOfEmotesPlugin.Log.LogMessage("i am in init play anim");
+            if (__instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim)
+            {
+                //BunchOfEmotesPlugin.Log.LogMessage(__instance.moveStyle);
+                //BunchOfEmotesPlugin.initEmotes();
+
+                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+            }
         }
     }
 }
