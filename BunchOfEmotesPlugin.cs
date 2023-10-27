@@ -10,6 +10,9 @@ using System;
 using System.Linq;
 using TMPro;
 using BunchOfEmotes.Patches;
+using System.Security.Cryptography;
+using System.IO;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace BunchOfEmotes
 {
@@ -51,6 +54,8 @@ namespace BunchOfEmotes
 
         public static GameplayUI ui;
 
+        private readonly string animationFolder = Path.Combine(Application.streamingAssetsPath, "Mods", "BunchOfEmotes", "Anims");
+
         /// <summary>
         /// Initialise the configuration settings and patch methods
         /// </summary>
@@ -84,16 +89,20 @@ namespace BunchOfEmotes
         public static int myAnimationKey = 0;
         public static int childcount = 0;
         public static Dictionary<int, string> myCustomAnims = new Dictionary<int, string>();
-        
 
+        public DirectoryInfo AssetFolder { get; protected set; }
         public static RuntimeAnimatorController myAnim;
 
         private void Update()
         {
             if (player != null)
             {
-                if (myCustomAnims.Count == 0)
+                if (myCustomAnims.Count == 0 && myAnim != null)
                 {
+                    string path = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/mycustombundle";
+                    AddAnimationClipToController(myAnim, path);
+
+                    //DirectoryInfo[] folders = AssetFolder.GetDirectories();
 
 
                     initEmotes();
@@ -216,6 +225,8 @@ namespace BunchOfEmotes
             {
                 myCustomAnims = new Dictionary<int, string>();
 
+                myCustomAnims[Animator.StringToHash("Dance Moves")] = "Dance Moves";
+                myCustomAnims[Animator.StringToHash("DanceMoves")] = "DanceMoves";
                 myCustomAnims[Animator.StringToHash("lieDown")] = "lieDown";
                 myCustomAnims[Animator.StringToHash("joinCypher3")] = "test";
                 myCustomAnims[Animator.StringToHash("MocapChoregraphy")] = "MocapChoregraphy";
@@ -329,6 +340,66 @@ namespace BunchOfEmotes
             }
 
         }
+
+        public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath)
+        {
+            AssetBundle bundle = AssetBundle.LoadFromFile(clipPath);
+            AnimationClip newClipToAdd = null;
+
+            var animationClips = bundle.LoadAllAssets<AnimationClip>();
+            foreach (AnimationClip clip in animationClips)
+            {
+                if (clip.name == "DanceMoves")
+                {
+                    Log.LogMessage("Look at me, I'm the clip now");
+                    newClipToAdd = clip;
+                }
+            }
+
+            if (newClipToAdd == null)
+            {
+                Debug.LogError("Animation clip not found: " + clipPath);
+                return;
+            }
+
+            // Clone the base animator controller to make changes.
+            AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController();
+            animatorOverrideController.runtimeAnimatorController = baseController;
+
+            // Get the current animation clips
+            AnimationClipPair[] currentClips = animatorOverrideController.clips;
+            List<AnimationClip> newClipsList = new List<AnimationClip>();
+
+            foreach (AnimationClipPair clipOverride in currentClips)
+            {
+                if (clipOverride.overrideClip != null)
+                {
+                    newClipsList.Add(clipOverride.overrideClip);
+                }
+            }
+
+            // Add the new animation clip
+            newClipsList.Add(newClipToAdd);
+
+            // Create new AnimationClipPairs
+            AnimationClipPair[] newClipPairs = new AnimationClipPair[newClipsList.Count];
+            for (int i = 0; i < newClipsList.Count; i++)
+            {
+                AnimationClipPair clipPair = new AnimationClipPair();
+                clipPair.originalClip = currentClips[i].originalClip;
+                clipPair.overrideClip = newClipsList[i];
+                newClipPairs[i] = clipPair;
+            }
+
+            // Set the new AnimationClipPairs
+            animatorOverrideController.clips = newClipPairs;
+
+            // Set the AnimatorOverrideController as the controller for your Animator.
+            // Replace 'animator' with your actual Animator reference.
+            Animator animator = FindObjectOfType<Animator>();
+            myAnim = animatorOverrideController;
+        }
+
 
         public static Dictionary<int, string> FillDictionaryFromCommaSeparatedString(string input)
         {
