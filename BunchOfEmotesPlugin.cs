@@ -92,6 +92,7 @@ namespace BunchOfEmotes
 
         public DirectoryInfo AssetFolder { get; protected set; }
         public static RuntimeAnimatorController myAnim;
+        public static RuntimeAnimatorController myAnim2;
 
         private void Update()
         {
@@ -147,8 +148,10 @@ namespace BunchOfEmotes
                         timer = 0.5f;
                         showMenu = false;
                         inAnimation = true;
+                        player.ui.TurnOn(true);
                     }
                 }
+
 
                 if (KeyboardConfirm.Value.IsDown() && player.moveStyle.ToString() == "ON_FOOT")
                 {
@@ -213,7 +216,7 @@ namespace BunchOfEmotes
 
             //freestyle1 > 18 
             childcount = player.transform.GetChild(0).childCount;
-            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
+            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim2;
 
             AnimationClip[] clips = myAnim.animationClips;
 
@@ -341,6 +344,8 @@ namespace BunchOfEmotes
 
         }
 
+
+
         public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath)
         {
             AssetBundle bundle = AssetBundle.LoadFromFile(clipPath);
@@ -367,38 +372,32 @@ namespace BunchOfEmotes
             animatorOverrideController.runtimeAnimatorController = baseController;
 
             // Get the current animation clips
-            AnimationClipPair[] currentClips = animatorOverrideController.clips;
-            List<AnimationClip> newClipsList = new List<AnimationClip>();
+            AnimationClip[] currentClips = animatorOverrideController.animationClips;
 
-            foreach (AnimationClipPair clipOverride in currentClips)
-            {
-                if (clipOverride.overrideClip != null)
-                {
-                    newClipsList.Add(clipOverride.overrideClip);
-                }
-            }
+            // Create a new list to store the updated clips.
+            List<AnimationClip> newClipsList = new List<AnimationClip>(currentClips);
 
             // Add the new animation clip
             newClipsList.Add(newClipToAdd);
 
-            // Create new AnimationClipPairs
-            AnimationClipPair[] newClipPairs = new AnimationClipPair[newClipsList.Count];
-            for (int i = 0; i < newClipsList.Count; i++)
-            {
-                AnimationClipPair clipPair = new AnimationClipPair();
-                clipPair.originalClip = currentClips[i].originalClip;
-                clipPair.overrideClip = newClipsList[i];
-                newClipPairs[i] = clipPair;
-            }
+            //Set the updated clips to the animator override controller.
+            //animatorOverrideController["boostRun"] = newClipToAdd;
 
-            // Set the new AnimationClipPairs
-            animatorOverrideController.clips = newClipPairs;
+            animatorOverrideController["freestyle12"] = newClipToAdd;
+
+
+            Log.LogMessage(animatorOverrideController.overridesCount);
+            Log.LogMessage(animatorOverrideController);
+
+            //DOESNT WORK WITH JUMP NEW ??? WTF ???? OH ONLY
 
             // Set the AnimatorOverrideController as the controller for your Animator.
             // Replace 'animator' with your actual Animator reference.
             Animator animator = FindObjectOfType<Animator>();
-            myAnim = animatorOverrideController;
+            myAnim2 = animatorOverrideController;
+
         }
+
 
 
         public static Dictionary<int, string> FillDictionaryFromCommaSeparatedString(string input)
