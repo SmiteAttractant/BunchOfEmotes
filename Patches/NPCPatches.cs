@@ -33,6 +33,7 @@ namespace BunchOfEmotes.Patches
                             {
                             
                                 BunchOfEmotesPlugin.myAnim = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().runtimeAnimatorController;
+                                //BunchOfEmotesPlugin.myAnimRuntime = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().AnimatorOverrideController;
                                 BunchOfEmotesPlugin.Log.LogMessage("clips amount : " + BunchOfEmotesPlugin.myAnim.animationClips.Count());
 
                             }

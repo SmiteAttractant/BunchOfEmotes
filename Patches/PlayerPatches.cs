@@ -36,8 +36,7 @@ namespace BunchOfEmotes.Patches
             {
                 //BunchOfEmotesPlugin.Log.LogMessage(__instance.moveStyle);
                 //BunchOfEmotesPlugin.initEmotes();
-
-                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim2;
             }
         }
     }
