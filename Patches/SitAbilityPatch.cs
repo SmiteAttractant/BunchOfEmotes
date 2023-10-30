@@ -22,6 +22,8 @@ internal class SitAbilityPatch
         if (__instance.p.curAnim != __instance.startSitHash && __instance.p.curAnim != __instance.stopSitHash)
         {
             BunchOfEmotesPlugin.inAnimation = false;
+            int childcount = BunchOfEmotesPlugin.player.transform.GetChild(0).childCount;
+            BunchOfEmotesPlugin.player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
             __instance.p.StopCurrentAbility();
             return false;
         }

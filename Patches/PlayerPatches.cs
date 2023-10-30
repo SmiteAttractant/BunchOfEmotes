@@ -32,11 +32,15 @@ namespace BunchOfEmotes.Patches
         {
             int childcount = __instance.transform.GetChild(0).childCount;
             //BunchOfEmotesPlugin.Log.LogMessage("i am in init play anim");
-            if (__instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim)
+            //if (__instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim2 && !BunchOfEmotesPlugin.inAnimation)
+            //{
+            //    //BunchOfEmotesPlugin.Log.LogMessage(__instance.moveStyle);
+            //    //BunchOfEmotesPlugin.initEmotes();
+            //    //__instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim2;
+            //}
+            if (__instance.name != "Player_HUMAN0" && __instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim)
             {
-                //BunchOfEmotesPlugin.Log.LogMessage(__instance.moveStyle);
-                //BunchOfEmotesPlugin.initEmotes();
-                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim2;
+                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
             }
         }
     }
