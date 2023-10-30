@@ -134,6 +134,7 @@ namespace BunchOfEmotes
                     if (myAnim2 != null)
                     {                    
                         customMenu = !customMenu;
+                        initEmotes();
                     }
                 }
 
@@ -141,7 +142,14 @@ namespace BunchOfEmotes
                 {
                     if (myAnimationKey == 0)
                     {
-                        UI.Instance.ShowNotification("",myCustomAnims.ElementAt(myAnimationKey).Value + " <", myCustomAnims.ElementAt(myAnimationKey + 1).Value);
+                        if (myCustomAnims.Count != 1)
+                        {                        
+                            UI.Instance.ShowNotification("",myCustomAnims.ElementAt(myAnimationKey).Value + " <", myCustomAnims.ElementAt(myAnimationKey + 1).Value);
+                        }
+                        else
+                        {
+                            UI.Instance.ShowNotification("",myCustomAnims.ElementAt(myAnimationKey).Value + " <","");
+                        }
                     }
                     else if (myAnimationKey == myCustomAnims.Count-1)
                     {
@@ -226,6 +234,11 @@ namespace BunchOfEmotes
                 
                 myCustomAnims = FillDictionaryFromCommaSeparatedString(defaultList); 
 
+            }
+
+            if (myAnimationKey > myCustomAnims.Count-1)
+            {
+                myAnimationKey = myCustomAnims.Count-1;
             }
 
         }
