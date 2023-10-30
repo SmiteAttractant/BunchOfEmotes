@@ -23,7 +23,7 @@ namespace BunchOfEmotes.Patches
             try
             {
                 if (BunchOfEmotesPlugin.myAnim == null)
-                { 
+                {
                     if (__instance.crew != Crew.NONE && __instance.character != Characters.boarder)
                     {
                         BunchOfEmotesPlugin.Log.LogMessage("npc name : " + __instance.name);
@@ -31,7 +31,7 @@ namespace BunchOfEmotes.Patches
                         {
                             if (BunchOfEmotesPlugin.myAnim == null)
                             {
-                            
+
                                 BunchOfEmotesPlugin.myAnim = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().runtimeAnimatorController;
                                 //BunchOfEmotesPlugin.myAnimRuntime = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().AnimatorOverrideController;
                                 BunchOfEmotesPlugin.Log.LogMessage("clips amount : " + BunchOfEmotesPlugin.myAnim.animationClips.Count());
@@ -42,7 +42,7 @@ namespace BunchOfEmotes.Patches
                 }
             }
             catch
-            { 
+            {
             }
 
         }
