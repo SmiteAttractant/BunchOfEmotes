@@ -24,7 +24,7 @@ namespace BunchOfEmotes
 
         private const string MyGUID = "com.Dragsun.BunchOfEmotes";
         private const string PluginName = "Bunch of emotes";
-        private const string VersionString = "1.1.0";
+        private const string VersionString = "1.3.0";
 
 
         public static string KeyboardPlusKey = "Next emote";
@@ -105,9 +105,7 @@ namespace BunchOfEmotes
             {
                 if (myCustomAnims.Count == 0 && myAnim != null)
                 {
-                    string path = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/bunchofemotes";
-
-                    Directory.CreateDirectory(Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/");
+                    string path = Paths.PluginPath + "/BunchofEmotes/Anims/bunchofemotes";
 
                     AddAnimationClipToController(myAnim, path);
 
@@ -218,15 +216,7 @@ namespace BunchOfEmotes
 
             if (customList.Value == true && myCustomList.Value != "")
             {
-                if (customMenu)
-                {
-                    myCustomAnims = myCustomAnims2;
-                }
-                else
-                {
-                    myCustomAnims = FillDictionaryFromCommaSeparatedString(myCustomList.Value); 
-                }
-
+                myCustomAnims = FillDictionaryFromCommaSeparatedString(myCustomList.Value); 
             }
             else
             {
@@ -235,6 +225,10 @@ namespace BunchOfEmotes
                 
                 myCustomAnims = FillDictionaryFromCommaSeparatedString(defaultList); 
 
+            }
+            if (customMenu)
+            {
+                myCustomAnims = myCustomAnims2;
             }
 
             if (myAnimationKey > myCustomAnims.Count-1)
@@ -251,23 +245,28 @@ namespace BunchOfEmotes
         public static RuntimeAnimatorController[] AControllers;
         public static Animator playerAn;
 
+
+        //initialisation of our controller and adding the custom emotes to it.
         public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath = null)
         {
             if(clipPath == null)
             {
-                clipPath = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/bunchofemotes";
+                clipPath = Paths.PluginPath + "/BunchofEmotes/Anims/bunchofemotes";
             }
 
-            string path = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/bunchofemotescontroller";
+            string path = Paths.PluginPath + "/BunchofEmotes/RuntimeAnimatorController/bunchofemotescontroller";
+
+
+
             if (bundleController == null)
             {
-                if (File.Exists(clipPath))
+                if (File.Exists(path))
                 {
                     bundleController = AssetBundle.LoadFromFile(path);
                 }
                 else
                 {
-                    Log.LogError("No custom file found.");
+                    Log.LogError("No controller files found, mod might not work as intended.");
                     return;
                 }
             }
@@ -285,7 +284,7 @@ namespace BunchOfEmotes
                 }
                 else
                 {
-                    Log.LogError("No custom file found.");
+                    Log.LogError("No custom animation files found, mod will work with only the one from the game.");
                     myAnim2 = null;
                     return;
                 }
@@ -293,9 +292,6 @@ namespace BunchOfEmotes
 
             AnimationClip newClipToAdd = null;
             AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController();
-            //animatorOverrideController.runtimeAnimatorController = baseController;
-
-
 
             foreach (RuntimeAnimatorController controller in AControllers)
             {
@@ -321,8 +317,7 @@ namespace BunchOfEmotes
 
                 if (seenNames.Contains(nameToCheck))
                 {
-                    // The name has already been seen
-                    //Log.LogMessage("Name '" + nameToCheck + "' has already been seen.");
+                    // The name has already been seen, so we do nothing
                 }
                 else
                 {
@@ -377,12 +372,11 @@ namespace BunchOfEmotes
 
                 Log.LogMessage(nameofthereplacedanimation + " > to > " + clipPair.overrideClip.name);
 
-
                 count++;
 
             }
 
-            Log.LogMessage("Custom animations succesfully loaded");
+            Log.LogMessage("Custom animations succesfully loaded.");
             myAnim = animatorOverrideController;
 
         }

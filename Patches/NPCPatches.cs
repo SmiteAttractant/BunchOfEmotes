@@ -5,14 +5,6 @@ using UnityEngine;
 
 namespace BunchOfEmotes.Patches
 {
-    // TODO Review this file and update to your own requirements, or remove it altogether if not required
-
-    /// <summary>
-    /// Sample Harmony Patch class. Suggestion is to use one file per patched class
-    /// though you can include multiple patch classes in one file.
-    /// Below is included as an example, and should be replaced by classes and methods
-    /// for your mod.
-    /// </summary>
     [HarmonyPatch(typeof(NPC))]
     internal class NPCPatches
     {
@@ -31,9 +23,8 @@ namespace BunchOfEmotes.Patches
                         {
                             if (BunchOfEmotesPlugin.myAnim == null)
                             {
-
+                                //all the animations are loaded on the NPCS we are taking them from here
                                 BunchOfEmotesPlugin.myAnim = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().runtimeAnimatorController;
-                                //BunchOfEmotesPlugin.myAnimRuntime = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().AnimatorOverrideController;
                                 BunchOfEmotesPlugin.Log.LogMessage("clips amount : " + BunchOfEmotesPlugin.myAnim.animationClips.Count());
 
                             }
