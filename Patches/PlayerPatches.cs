@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Reptile;
+using System.IO;
 using UnityEngine;
+using static Reptile.Player;
 
 namespace BunchOfEmotes.Patches
 {
-    // TODO Review this file and update to your own requirements, or remove it altogether if not required
+    // TODO Review __instance file and update to your own requirements, or remove it altogether if not required
 
     /// <summary>
     /// Sample Harmony Patch class. Suggestion is to use one file per patched class
@@ -28,7 +30,7 @@ namespace BunchOfEmotes.Patches
 
         [HarmonyPatch(nameof(Player.PlayAnim))]
         [HarmonyPostfix]
-        public static void PlayAnim(Player __instance)
+        public static void PlayAnim(Player __instance, bool instant)
         {
             int childcount = __instance.transform.GetChild(0).childCount;
             //BunchOfEmotesPlugin.Log.LogMessage("i am in init play anim");
@@ -38,9 +40,17 @@ namespace BunchOfEmotes.Patches
             //    //BunchOfEmotesPlugin.initEmotes();
             //    //__instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim2;
             //}
+            if (true)
+            {
+                
+            }
+
+
             if (__instance.name != "Player_HUMAN0" && __instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim)
             {
                 __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                //__instance.InitAnimation();
+                //__instance.InitAnimInfosTricking();
             }
         }
     }

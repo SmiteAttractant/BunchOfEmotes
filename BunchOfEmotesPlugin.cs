@@ -131,7 +131,7 @@ namespace BunchOfEmotes
 
                 if (KeyboardSwap.Value.IsDown())
                 {
-                    if (myAnim2 != null)
+                    if (myCustomAnims2 != null)
                     {                    
                         customMenu = !customMenu;
                         initEmotes();
@@ -165,15 +165,16 @@ namespace BunchOfEmotes
                         childcount = player.transform.GetChild(0).childCount;
                         if (customMenu)
                         {
-                            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim2;
+                            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
                             player.ActivateAbility(player.sitAbility);
-                            player.PlayAnim(myCustomAnims2.ElementAt(myAnimationKey).Key, true, true, -1f);
+                            //player.PlayAnim(myCustomAnims2.ElementAt(myAnimationKey).Key, false, false, -1f);
+                            player.PlayAnim(myCustomAnims2.ElementAt(myAnimationKey).Key, false, false, -1f);
                         }
                         else
                         {
                             player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
                             player.ActivateAbility(player.sitAbility);
-                            player.PlayAnim(myCustomAnims.ElementAt(myAnimationKey).Key, true, true, -1f);
+                            player.PlayAnim(myCustomAnims.ElementAt(myAnimationKey).Key, false, false, -1f);
                         }
 
 
@@ -244,10 +245,38 @@ namespace BunchOfEmotes
         }
 
         public static AssetBundle bundle;
+        public static AssetBundle bundleController;
+        public static int[] customemoteshash;
+        public static AnimatorOverrideController[] Controllers;
+        public static RuntimeAnimatorController[] AControllers;
         public static Animator playerAn;
 
-        public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath)
+        public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath = null)
         {
+            if(clipPath == null)
+            {
+                clipPath = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/bunchofemotes";
+            }
+
+            string path = Application.streamingAssetsPath + "/Mods/BunchOfEmotes/Anims/bunchofemotescontroller";
+            if (bundleController == null)
+            {
+                if (File.Exists(clipPath))
+                {
+                    bundleController = AssetBundle.LoadFromFile(path);
+                }
+                else
+                {
+                    Log.LogError("No custom file found.");
+                    return;
+                }
+            }
+
+            if (AControllers == null)
+            {
+                AControllers = bundleController.LoadAllAssets<RuntimeAnimatorController>();            
+            }
+
             if (bundle == null)
             {
                 if (File.Exists(clipPath))
@@ -256,7 +285,6 @@ namespace BunchOfEmotes
                 }
                 else
                 {
-                    
                     Log.LogError("No custom file found.");
                     myAnim2 = null;
                     return;
@@ -265,11 +293,63 @@ namespace BunchOfEmotes
 
             AnimationClip newClipToAdd = null;
             AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController();
-            animatorOverrideController.runtimeAnimatorController = baseController;
-            animatorOverrideController.name = "thefuckening";
+            //animatorOverrideController.runtimeAnimatorController = baseController;
 
-            int count = 100;
+
+
+            foreach (RuntimeAnimatorController controller in AControllers)
+            {
+                if (true)
+                {
+                    animatorOverrideController.runtimeAnimatorController = controller;
+                }
+            }
+
+            int count = 0;
             var animationClips = bundle.LoadAllAssets<AnimationClip>();
+
+            //animatorOverrideController.clips. = baseController.animationClips;
+
+            HashSet<string> seenNames = new HashSet<string>();
+
+
+            foreach (AnimationClip clips in baseController.animationClips)
+            {
+                customemoteshash.AddItem(clips.GetHashCode());
+
+                string nameToCheck = clips.name;
+
+                if (seenNames.Contains(nameToCheck))
+                {
+                    // The name has already been seen
+                    //Log.LogMessage("Name '" + nameToCheck + "' has already been seen.");
+                }
+                else
+                {
+                    try
+                    {
+                        string clipname = clips.name;
+
+                        Log.LogMessage(animatorOverrideController[clipname].GetHashCode() + " = " + animatorOverrideController[clipname].name + " > to > " + clips.GetHashCode() + " = " + clips.name);
+
+                        animatorOverrideController[clipname] = clips;
+
+                        //animatorOverrideController[clipname].name = clips.name;
+
+                        count++;
+
+                        seenNames.Add(nameToCheck);
+                    }
+                    catch (Exception)
+                    {
+                        Log.LogMessage(clips.name + " is causing problems");
+                    }
+
+
+
+                }
+
+            }
 
             foreach (AnimationClip clip in animationClips)
             {
@@ -285,15 +365,15 @@ namespace BunchOfEmotes
 
                 AnimationClipPair clipPair = new AnimationClipPair
                 {
-                    originalClip = baseController.animationClips[count], 
-                    overrideClip = newClipToAdd 
+                    originalClip = newClipToAdd,
+                    overrideClip = newClipToAdd
                 };
 
                 string nameofthereplacedanimation = animatorOverrideController.animationClips[count].name;
 
                 myCustomAnims2[Animator.StringToHash(nameofthereplacedanimation)] = newClipToAdd.name;
 
-                animatorOverrideController[nameofthereplacedanimation] = clipPair.overrideClip;
+                animatorOverrideController[nameofthereplacedanimation] = newClipToAdd;
 
                 Log.LogMessage(nameofthereplacedanimation + " > to > " + clipPair.overrideClip.name);
 
@@ -303,7 +383,7 @@ namespace BunchOfEmotes
             }
 
             Log.LogMessage("Custom animations succesfully loaded");
-            myAnim2 = animatorOverrideController;
+            myAnim = animatorOverrideController;
 
         }
 
