@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\games\Bomb Rush Cyberfunk\BepInEx\plugins\BunchofEmotes\</OutputPath>
+    <OutputPath>..\..\..\..\games\Bomb Rush Cyberfunk\BepInEx\plugins\Dragsun-Bunch_Of_Emotes\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
