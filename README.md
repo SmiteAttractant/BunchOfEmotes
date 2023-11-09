@@ -44,3 +44,4 @@ By pressing the `B` button you can switch between the in game emotes and the cus
 ## ♥ Special thanks to : ♥<br/>
 - *StonyOnBRC*<br/>
 - *Lazy Duchess*<br/>
+- *ProjectAlpha22*<br/>
