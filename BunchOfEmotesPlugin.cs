@@ -13,6 +13,8 @@ using BunchOfEmotes.Patches;
 using System.Security.Cryptography;
 using System.IO;
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
+using System.Text.RegularExpressions;
+using static DynamicBoneColliderBase;
 
 namespace BunchOfEmotes
 {
@@ -41,7 +43,9 @@ namespace BunchOfEmotes
         public static ConfigEntry<KeyboardShortcut> KeyboardConfirm;
         public static ConfigEntry<KeyboardShortcut> KeyboardSwap;
         public static ConfigEntry<bool> customList;
+        public static ConfigEntry<bool> wantACustomListOfInject;
         public static ConfigEntry<string> myCustomList;
+        public static ConfigEntry<string> myCustomListOfInject;
         public static DieAbility dieAbility;
         public static bool showMenu = false;
         public static bool myVariable = true; // This is the variable you want to toggle
@@ -49,7 +53,9 @@ namespace BunchOfEmotes
         public static bool keyIsPressed = false;
         public static bool inAnimation = false;
         public static string customListKey = "Do you want to use a custom list ?";
+        public static string wantACustomListOfInjectKey = "Do you want your list of injected animation to be customised ?";
         public static string myCustomListKey = "Enter your custom list";
+        public static string myCustomListOfInjectKey = "Custom list for the injected animations (works for the in game one too)";
 
         private static readonly Harmony Harmony = new Harmony(MyGUID);
         public static ManualLogSource Log = new ManualLogSource(PluginName);
@@ -72,6 +78,8 @@ namespace BunchOfEmotes
             KeyboardSwap = Config.Bind("Custom emotes", KeyboardSwapKey, new KeyboardShortcut(KeyCode.B));
             customList = Config.Bind("Custom list", customListKey, defaultValue: false, "A custom list of emotes is the list that is gonna be replacing the basic one that appears when you trigger the mod in game. A list of all of them can be found on my Github");
             myCustomList = Config.Bind("Custom list", myCustomListKey, "jumpNEW,fallNEW,wallRunLeftNEW,grafSlashUP_RIGHT", "Your custom list of animations they must be without any spaces and separated by ,");
+            wantACustomListOfInject = Config.Bind("Injected emotes list", wantACustomListOfInjectKey, defaultValue: false, "A custom list but for the injected animations");
+            myCustomListOfInject = Config.Bind("Injected emotes list", myCustomListOfInjectKey, "jumpNEW,fallNEW,wallRunLeftNEW,grafSlashUP_RIGHT", "Same thing as the custom list but this one also accept custom animations. Write their name with the spaces and uppercases.");
 
             KeyboardPlus.SettingChanged += ConfigSettingChanged;
 
@@ -90,7 +98,8 @@ namespace BunchOfEmotes
         public static int myAnimationKey = 0;
         public static int childcount = 0;
         public static Dictionary<int, string> myCustomAnims = new Dictionary<int, string>();
-        public static Dictionary<int, string> myCustomAnims2 = new Dictionary<int, string>();
+        public static Dictionary<int, string> myCustomAnims2 = new Dictionary<int, string>(); 
+        public static Dictionary<int, string> myCustomAnimsInject = new Dictionary<int, string>(); 
 
         public DirectoryInfo AssetFolder { get; protected set; }
 
@@ -105,7 +114,7 @@ namespace BunchOfEmotes
             {
                 if (myCustomAnims.Count == 0 && myAnim != null)
                 {
-                    string path = Paths.PluginPath + "/BunchofEmotes/Anims/bunchofemotes";
+                    string path = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotes";
 
                     AddAnimationClipToController(myAnim, path);
 
@@ -123,7 +132,7 @@ namespace BunchOfEmotes
                 {
                     if (myAnimationKey != myCustomAnims.Count-1)
                     {
-                        myAnimationKey++;          
+                        myAnimationKey++;
                     }
                 }
 
@@ -161,23 +170,32 @@ namespace BunchOfEmotes
                     {
                         inAnimation = true;
                         childcount = player.transform.GetChild(0).childCount;
-                        if (customMenu)
+                        if (customMenu && !wantACustomListOfInject.Value)
                         {
-                            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
+                            //player.anim.SetLayerWeight(5, 1f);
+                            //player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
                             player.ActivateAbility(player.sitAbility);
                             //player.PlayAnim(myCustomAnims2.ElementAt(myAnimationKey).Key, false, false, -1f);
                             player.PlayAnim(myCustomAnims2.ElementAt(myAnimationKey).Key, false, false, -1f);
                         }
+                        else if(customMenu && wantACustomListOfInject.Value)
+                        {
+                            //player.anim.SetLayerWeight(5, 1f);
+                            //player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
+                            player.ActivateAbility(player.sitAbility);
+                            player.PlayAnim(myCustomAnimsInject.ElementAt(myAnimationKey).Key, false, false, -1f);
+                        }
                         else
                         {
-                            player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
+                            //player.anim.SetLayerWeight(5, 0f);
+                            //player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = myAnim;
                             player.ActivateAbility(player.sitAbility);
                             player.PlayAnim(myCustomAnims.ElementAt(myAnimationKey).Key, false, false, -1f);
                         }
 
 
                         UI.Instance.HideNotification();
-                        timer = 0.5f;
+                        timer = 0.1f;
                         showMenu = false;
                         player.ui.TurnOn(true);
                     }
@@ -226,9 +244,13 @@ namespace BunchOfEmotes
                 myCustomAnims = FillDictionaryFromCommaSeparatedString(defaultList); 
 
             }
-            if (customMenu)
+            if (customMenu && !wantACustomListOfInject.Value)
             {
                 myCustomAnims = myCustomAnims2;
+            }
+            else if (customMenu && wantACustomListOfInject.Value)
+            {
+                myCustomAnims = BunchOfEmotesPlugin.myCustomAnimsInject;
             }
 
             if (myAnimationKey > myCustomAnims.Count-1)
@@ -241,6 +263,7 @@ namespace BunchOfEmotes
         public static AssetBundle bundle;
         public static AssetBundle bundleController;
         public static int[] customemoteshash;
+        public static int[] customemotesCheck = null;
         public static AnimatorOverrideController[] Controllers;
         public static RuntimeAnimatorController[] AControllers;
         public static Animator playerAn;
@@ -251,29 +274,59 @@ namespace BunchOfEmotes
         {
             if(clipPath == null)
             {
-                clipPath = Paths.PluginPath + "/BunchofEmotes/Anims/bunchofemotes";
+                clipPath = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotes";
             }
 
-            string path = Paths.PluginPath + "/BunchofEmotes/RuntimeAnimatorController/bunchofemotescontroller";
+            string path = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontroller";
+
+            string replace = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replace";
+            string replaceBMX = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replacebmx";
+            string replaceInline = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceinline";
+            string replaceSkateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceskateboard";
+            AssetBundle replaceBundle = null;
+            AssetBundle replaceBundleBMX = null;
+            AssetBundle replaceBundleInline = null;
+            AssetBundle replaceBundleSkateboard = null;
+            AnimationClip[] replaceAnimations = null;
+            AnimationClip[] replaceAnimationsBMX = null;
+            AnimationClip[] replaceAnimationsInline = null;
+            AnimationClip[] replaceAnimationsSkateboard = null;
 
 
 
-            if (bundleController == null)
-            {
-                if (File.Exists(path))
-                {
-                    bundleController = AssetBundle.LoadFromFile(path);
-                }
-                else
-                {
-                    Log.LogError("No controller files found, mod might not work as intended.");
-                    return;
-                }
-            }
+            //loading the RuntimeAnimatorController
 
+            bundleController = loadFromString(path, bundleController);
+
+
+            //loading the replaced animations
+            replaceBundle = loadFromString(replace, replaceBundle);
+            replaceBundleBMX = loadFromString(replaceBMX, replaceBundleBMX);
+            replaceBundleInline = loadFromString(replaceInline, replaceBundleInline);
+            replaceBundleSkateboard = loadFromString(replaceSkateboard, replaceBundleSkateboard);
+
+            //loading from bundle
             if (AControllers == null)
             {
                 AControllers = bundleController.LoadAllAssets<RuntimeAnimatorController>();            
+            }
+
+            //loading from replace bundle
+            if (replaceAnimations == null && replaceBundle != null)
+            {
+                replaceAnimations = replaceBundle.LoadAllAssets<AnimationClip>();
+            }
+            if (replaceAnimationsBMX == null && replaceBundleBMX != null)
+            {
+                replaceAnimationsBMX = replaceBundleBMX.LoadAllAssets<AnimationClip>();
+            }
+            if (replaceAnimationsInline == null && replaceBundleInline != null)
+            {
+                replaceAnimationsInline = replaceBundleInline.LoadAllAssets<AnimationClip>();
+            }
+            if (replaceAnimationsSkateboard == null && replaceBundleSkateboard != null)
+            {
+                replaceAnimationsSkateboard = replaceBundleSkateboard.LoadAllAssets<AnimationClip>();
             }
 
             if (bundle == null)
@@ -300,81 +353,99 @@ namespace BunchOfEmotes
                     animatorOverrideController.runtimeAnimatorController = controller;
                 }
             }
+            Log.LogDebug(animatorOverrideController.runtimeAnimatorController.name);
 
+            animatorOverrideController.name = "BunchOfEmotesController";
             int count = 0;
             var animationClips = bundle.LoadAllAssets<AnimationClip>();
 
             //animatorOverrideController.clips. = baseController.animationClips;
 
             HashSet<string> seenNames = new HashSet<string>();
-
-
+            List<int> termsList = new List<int>();
+            
             foreach (AnimationClip clips in baseController.animationClips)
             {
-                customemoteshash.AddItem(clips.GetHashCode());
-
-                string nameToCheck = clips.name;
-
-                if (seenNames.Contains(nameToCheck))
+                if (clips != null)
                 {
-                    // The name has already been seen, so we do nothing
-                }
-                else
-                {
-                    try
+                    customemoteshash.AddItem(clips.GetHashCode());
+
+                    string nameToCheck = clips.name;
+
+                    if (seenNames.Contains(nameToCheck))
                     {
-                        string clipname = clips.name;
-
-                        Log.LogMessage(animatorOverrideController[clipname].GetHashCode() + " = " + animatorOverrideController[clipname].name + " > to > " + clips.GetHashCode() + " = " + clips.name);
-
-                        animatorOverrideController[clipname] = clips;
-
-                        //animatorOverrideController[clipname].name = clips.name;
-
-                        count++;
-
-                        seenNames.Add(nameToCheck);
+                        // The name has already been seen, so we do nothing
                     }
-                    catch (Exception)
+                    else
                     {
-                        Log.LogMessage(clips.name + " is causing problems");
+                        try
+                        {
+                            string clipname = clips.name;
+
+                            animatorOverrideController[clipname] = clips;
+
+                            //animatorOverrideController[clipname].name = clips.name;
+
+
+                            seenNames.Add(nameToCheck);
+                        }
+                        catch (Exception)
+                        {
+                            Log.LogError(clips.name + " is causing problems");
+                        }
+
                     }
-
-
-
                 }
 
             }
 
-            foreach (AnimationClip clip in animationClips)
+            var trueCustomIndex = 0;
+            foreach (AnimationClip clips in animatorOverrideController.runtimeAnimatorController.animationClips)
             {
-                Log.LogMessage("Look at me, I'm the clip now");
-                newClipToAdd = clip as AnimationClip;
-
-
-                if (newClipToAdd == null)
+                try
                 {
-                    Debug.LogError("Animation clip not found: " + clipPath);
-                    break;
+                    if (clips.name == "z1")
+                    {
+                        trueCustomIndex = count;
+                        Log.LogDebug("found");
+                        break;
+                    }
+                    count++;
+                }
+                catch (Exception e)
+                {
+                    Log.LogError(e.Message);
                 }
 
-                AnimationClipPair clipPair = new AnimationClipPair
-                {
-                    originalClip = newClipToAdd,
-                    overrideClip = newClipToAdd
-                };
-
-                string nameofthereplacedanimation = animatorOverrideController.animationClips[count].name;
-
-                myCustomAnims2[Animator.StringToHash(nameofthereplacedanimation)] = newClipToAdd.name;
-
-                animatorOverrideController[nameofthereplacedanimation] = newClipToAdd;
-
-                Log.LogMessage(nameofthereplacedanimation + " > to > " + clipPair.overrideClip.name);
-
-                count++;
-
             }
+
+            count = AddAnimations(animationClips, animatorOverrideController, count, termsList);
+
+
+            injectAnimation(replaceAnimations, animatorOverrideController);
+            injectAnimation(replaceAnimationsBMX, player.animatorControllerBMX);
+            injectAnimation(replaceAnimationsInline, player.animatorControllerSkates);
+            injectAnimation(replaceAnimationsSkateboard, player.animatorControllerSkateboard);
+
+            string pattern = @"bunchofemotes\d";
+            Regex regex = new Regex(pattern);
+            var info = new DirectoryInfo(Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bulk/");
+            var fileInfo = info.GetFiles();
+            foreach (var item in fileInfo)
+            {
+                if (regex.IsMatch(item.Name))
+                {
+                    Log.LogMessage(item.Name + " loaded");
+                    bundle.Unload(false);
+                    bundle = AssetBundle.LoadFromFile(item.FullName);
+                    animationClips = bundle.LoadAllAssets<AnimationClip>();
+                    count = AddAnimations(animationClips, animatorOverrideController, count, termsList);
+                }
+            }
+
+
+
+            customemotesCheck = termsList.ToArray();
 
             Log.LogMessage("Custom animations succesfully loaded.");
             myAnim = animatorOverrideController;
@@ -413,6 +484,123 @@ namespace BunchOfEmotes
             {
                 KeyboardShortcut newValue = (KeyboardShortcut)settingChangedEventArgs.ChangedSetting.BoxedValue;
             }
+        }
+
+        private static AssetBundle loadFromString(string path, AssetBundle bundleTemp)
+        {
+            if (bundleTemp == null)
+            {
+                if (File.Exists(path))
+                {
+                    bundleTemp = AssetBundle.LoadFromFile(path);
+                    //Log.LogError(path + " found");
+                }
+                else
+                {
+                    //Log.LogError(path + " doesnt exist skipping");
+                    return null;
+                }
+            }
+
+            return bundleTemp;
+        }
+
+        private static void injectAnimation(AnimationClip[] replaceAnimations, AnimatorOverrideController animatorOverrideController)
+        {
+            if (replaceAnimations != null)
+            {
+                foreach (AnimationClip clips in replaceAnimations)
+                {
+                    try
+                    {
+
+                        animatorOverrideController[clips.name] = clips;
+
+                        Log.LogDebug("successfully replaced " + clips.name);
+
+                    }
+                    catch (Exception)
+                    {
+                        Log.LogMessage(clips.name + " is causing problems in the replace");
+                    }
+                }
+            }
+        }
+
+        private static void injectAnimation(AnimationClip[] replaceAnimations, RuntimeAnimatorController animatorOverrideController)
+        {
+            if (replaceAnimations != null)
+            {
+                AnimatorOverrideController tempOverride = new AnimatorOverrideController();
+                tempOverride.runtimeAnimatorController = animatorOverrideController;
+
+                foreach (AnimationClip clips in replaceAnimations)
+                {
+                    try
+                    {
+                        tempOverride[clips.name] = clips;
+                    }
+                    catch (Exception)
+                    {
+                        Log.LogError(clips.name + " is causing problems in the replace");
+                    }
+
+                }
+                animatorOverrideController = tempOverride;
+            }
+
+        }
+
+        private static int AddAnimations(AnimationClip[] animationClips, AnimatorOverrideController animatorOverrideController, int count, List<int> termsList)
+        {
+            if (myCustomAnimsInject.Count == 0)
+            {
+                myCustomAnimsInject = FillDictionaryFromCommaSeparatedString(myCustomListOfInject.Value);      
+            }
+
+
+            foreach (AnimationClip clip in animationClips)
+            {
+                var newClipToAdd = clip as AnimationClip;
+
+                if (newClipToAdd == null)
+                {
+                    Debug.LogError("Animation clip not found: " + animationClips);
+                    break;
+                }
+
+                termsList.Add(newClipToAdd.GetHashCode());
+
+                string nameofthereplacedanimation = animatorOverrideController.animationClips[count].name;
+
+                BunchOfEmotesPlugin.myCustomAnims2[Animator.StringToHash(nameofthereplacedanimation)] = newClipToAdd.name;
+
+                animatorOverrideController[nameofthereplacedanimation] = newClipToAdd;
+
+                string clipName = newClipToAdd.name;
+                int clipHash = Animator.StringToHash(clipName);
+
+
+
+                if (myCustomAnimsInject.ContainsKey(clipHash))
+                {
+                    var tempsid = Animator.StringToHash(newClipToAdd.name);
+
+                    if (myCustomAnimsInject.Remove(tempsid))
+                    {
+                        myCustomAnimsInject.Add(Animator.StringToHash(nameofthereplacedanimation), newClipToAdd.name);
+                    }
+                    else
+                    {
+                        Log.LogError("Failed to remove the key.");
+                    }
+                }
+
+
+                count++;
+
+            }
+            return count;
         }
     }
 

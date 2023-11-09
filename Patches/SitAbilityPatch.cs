@@ -21,9 +21,11 @@ internal class SitAbilityPatch
                 var childcount = BunchOfEmotesPlugin.player.transform.GetChild(0).childCount;
                 __instance.p.StopCurrentAbility();
                 BunchOfEmotesPlugin.player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                BunchOfEmotesPlugin.player.anim.SetLayerWeight(5, 0f);
             }
             if (__instance.p.curAnim != __instance.startSitHash && __instance.p.curAnim != __instance.stopSitHash)
             {
+                BunchOfEmotesPlugin.player.anim.SetLayerWeight(5, 0f);
                 __instance.p.StopCurrentAbility();
                 return false;
             }
@@ -42,6 +44,7 @@ internal class SitAbilityPatch
             {
                 BunchOfEmotesPlugin.inAnimation = false;
                 int childcount = BunchOfEmotesPlugin.player.transform.GetChild(0).childCount;
+                BunchOfEmotesPlugin.player.anim.SetLayerWeight(5, 0f);
                 BunchOfEmotesPlugin.player.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
                 __instance.p.StopCurrentAbility();
                 return false;

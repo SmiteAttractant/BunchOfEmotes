@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Reptile;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using static Reptile.Player;
 
@@ -20,17 +21,34 @@ namespace BunchOfEmotes.Patches
             return true;
         }
 
+        [HarmonyPatch(nameof(Player.EnablePlayer))]
+        [HarmonyPostfix]
+        public static void EnablePlayer(Player __instance)
+        {
+            //int childcount = __instance.transform.GetChild(0).childCount;
+            //slop crew compatibility
+            bool isAi = __instance.name.Contains("AI");
+
+            if (__instance.animatorController != BunchOfEmotesPlugin.myAnim && !isAi)
+            {
+                __instance.animatorController = BunchOfEmotesPlugin.myAnim;
+            }
+
+        }
         [HarmonyPatch(nameof(Player.PlayAnim))]
         [HarmonyPostfix]
-        public static void PlayAnim(Player __instance, bool instant)
+        public static void PlayAnim(Player __instance)
         {
-            int childcount = __instance.transform.GetChild(0).childCount;
-
+            //int childcount = __instance.transform.GetChild(0).childCount;
             //slop crew compatibility
-            if (__instance.name != "Player_HUMAN0" && __instance.moveStyle.ToString() == "ON_FOOT" && __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController != BunchOfEmotesPlugin.myAnim)
+            bool isAi = __instance.name.Contains("AI");
+
+            if (__instance.animatorController != BunchOfEmotesPlugin.myAnim && !isAi)
             {
-                __instance.transform.GetChild(0).GetChild(childcount - 1).GetChild(0).GetComponent<Animator>().runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                __instance.animatorController = BunchOfEmotesPlugin.myAnim;
+                __instance.anim.runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
             }
+
         }
     }
 }
