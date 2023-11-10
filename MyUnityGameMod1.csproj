@@ -78,6 +78,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\games\Bomb Rush Cyberfunk\Bomb Rush Cyberfunk_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\games\Bomb Rush Cyberfunk\Bomb Rush Cyberfunk_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\..\..\..\games\Bomb Rush Cyberfunk\Bomb Rush Cyberfunk_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
@@ -146,6 +150,7 @@
   <ItemGroup>
     <Compile Include="Patches\GameplayUIPatches.cs" />
     <Compile Include="Patches\NPCPatches.cs" />
+    <Compile Include="Patches\CharacterConstructorPatches.cs" />
     <Compile Include="Patches\SitAbilityPatch.cs" />
     <Compile Include="Patches\DieAbilityPatches.cs" />
     <Compile Include="Patches\UIPatches.cs" />

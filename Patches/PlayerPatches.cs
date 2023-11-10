@@ -27,7 +27,7 @@ namespace BunchOfEmotes.Patches
         {
             //int childcount = __instance.transform.GetChild(0).childCount;
             //slop crew compatibility
-            bool isAi = __instance.name.Contains("AI");
+            bool isAi = __instance.name.Contains("AI") || __instance.name.Contains("(Clone)");
 
             if (__instance.animatorController != BunchOfEmotesPlugin.myAnim && !isAi)
             {
@@ -41,7 +41,7 @@ namespace BunchOfEmotes.Patches
         {
             //int childcount = __instance.transform.GetChild(0).childCount;
             //slop crew compatibility
-            bool isAi = __instance.name.Contains("AI");
+            bool isAi = __instance.name.Contains("AI") || __instance.name.Contains("(Clone)");
 
             if (__instance.animatorController != BunchOfEmotesPlugin.myAnim && !isAi)
             {

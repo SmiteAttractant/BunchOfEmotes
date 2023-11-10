@@ -105,7 +105,9 @@ namespace BunchOfEmotes
 
         public static bool customMenu = false;
 
+        public static NPC myNPC;
         public static RuntimeAnimatorController myAnim;
+        public static RuntimeAnimatorController myAnimUntouched;
         public static RuntimeAnimatorController myAnim2;
 
         private void Update()
@@ -262,6 +264,7 @@ namespace BunchOfEmotes
 
         public static AssetBundle bundle;
         public static AssetBundle bundleController;
+        public static AssetBundle bundleControllerinlines;
         public static int[] customemoteshash;
         public static int[] customemotesCheck = null;
         public static AnimatorOverrideController[] Controllers;
@@ -278,6 +281,9 @@ namespace BunchOfEmotes
             }
 
             string path = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontroller";
+            string pathbmx = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerbmx";
+            string pathinlines = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerinlines";
+            string pathskateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerskateboard";
 
             string replace = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replace";
             string replaceBMX = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replacebmx";
@@ -292,11 +298,16 @@ namespace BunchOfEmotes
             AnimationClip[] replaceAnimationsInline = null;
             AnimationClip[] replaceAnimationsSkateboard = null;
 
+            RuntimeAnimatorController[] ControllersInlines = null;
+            RuntimeAnimatorController[] ControllersBmx = null;
+            RuntimeAnimatorController[] ControllersSkateboard = null;
+
 
 
             //loading the RuntimeAnimatorController
 
             bundleController = loadFromString(path, bundleController);
+            bundleControllerinlines = loadFromString(pathinlines, bundleControllerinlines);
 
 
             //loading the replaced animations
@@ -309,6 +320,11 @@ namespace BunchOfEmotes
             if (AControllers == null)
             {
                 AControllers = bundleController.LoadAllAssets<RuntimeAnimatorController>();            
+            }
+
+            if (bundleControllerinlines != null)
+            {
+                ControllersInlines = bundleControllerinlines.LoadAllAssets<RuntimeAnimatorController>();
             }
 
             //loading from replace bundle
@@ -345,6 +361,9 @@ namespace BunchOfEmotes
 
             AnimationClip newClipToAdd = null;
             AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController();
+            AnimatorOverrideController animatorOverrideControllerbmx = new AnimatorOverrideController();
+            AnimatorOverrideController animatorOverrideControllerinlines = new AnimatorOverrideController();
+            AnimatorOverrideController animatorOverrideControllerskateboard = new AnimatorOverrideController();
 
             foreach (RuntimeAnimatorController controller in AControllers)
             {
@@ -353,6 +372,19 @@ namespace BunchOfEmotes
                     animatorOverrideController.runtimeAnimatorController = controller;
                 }
             }
+
+            if (ControllersInlines != null)
+            {
+                foreach (RuntimeAnimatorController controller in ControllersInlines)
+                {
+                    if (true)
+                    {
+                        animatorOverrideControllerinlines.runtimeAnimatorController = controller;
+                        animatorOverrideControllerinlines.name = "BunchOfEmotesControllerinlines";
+                    }
+                }                
+            }
+
             Log.LogDebug(animatorOverrideController.runtimeAnimatorController.name);
 
             animatorOverrideController.name = "BunchOfEmotesController";
@@ -364,9 +396,44 @@ namespace BunchOfEmotes
             HashSet<string> seenNames = new HashSet<string>();
             List<int> termsList = new List<int>();
             
-            foreach (AnimationClip clips in baseController.animationClips)
+            foreach (AnimationClip clip in baseController.animationClips)
             {
-                if (clips != null)
+                if (clip != null)
+                {
+                    customemoteshash.AddItem(clip.GetHashCode());
+
+                    string nameToCheck = clip.name;
+
+                    if (seenNames.Contains(nameToCheck))
+                    {
+                        // The name has already been seen, so we do nothing
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string clipname = clip.name;
+
+                            animatorOverrideController[clipname] = clip;
+
+                            //animatorOverrideController[clipname].name = clip.name;
+
+
+                            seenNames.Add(nameToCheck);
+                        }
+                        catch (Exception)
+                        {
+                            Log.LogError(clip.name + " is causing problems");
+                        }
+
+                    }
+                }
+
+            }
+
+            foreach (AnimationClip clips in player.animatorControllerSkates.animationClips)
+            {
+                if (clips != null && ControllersInlines != null)
                 {
                     customemoteshash.AddItem(clips.GetHashCode());
 
@@ -382,7 +449,7 @@ namespace BunchOfEmotes
                         {
                             string clipname = clips.name;
 
-                            animatorOverrideController[clipname] = clips;
+                            animatorOverrideControllerinlines[clipname] = clips;
 
                             //animatorOverrideController[clipname].name = clips.name;
 
@@ -396,7 +463,11 @@ namespace BunchOfEmotes
 
                     }
                 }
+            }
 
+            if (bundleControllerinlines != null)
+            {
+                player.animatorControllerSkates = animatorOverrideControllerinlines;            
             }
 
             var trueCustomIndex = 0;
@@ -539,6 +610,7 @@ namespace BunchOfEmotes
                     try
                     {
                         tempOverride[clips.name] = clips;
+                        Log.LogMessage(clips.name + " > " + clips);
                     }
                     catch (Exception)
                     {
