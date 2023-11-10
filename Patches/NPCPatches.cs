@@ -14,6 +14,11 @@ namespace BunchOfEmotes.Patches
         {
             try
             {
+                if (BunchOfEmotesPlugin.myNPC == null)
+                {
+                    BunchOfEmotesPlugin.myNPC = __instance;
+                }
+
                 if (BunchOfEmotesPlugin.myAnim == null)
                 {
                     if (__instance.crew != Crew.NONE && __instance.character != Characters.boarder)
@@ -25,6 +30,10 @@ namespace BunchOfEmotes.Patches
                             {
                                 //all the animations are loaded on the NPCS we are taking them from here
                                 BunchOfEmotesPlugin.myAnim = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().runtimeAnimatorController;
+                                if (BunchOfEmotesPlugin.myAnimUntouched == null)
+                                {
+                                    BunchOfEmotesPlugin.myAnimUntouched = __instance.transform.GetChild(0).GetChild(1).GetComponent<Animator>().runtimeAnimatorController;                                
+                                }
                                 BunchOfEmotesPlugin.Log.LogMessage("clips amount : " + BunchOfEmotesPlugin.myAnim.animationClips.Count());
 
                             }
