@@ -274,7 +274,17 @@ namespace BunchOfEmotes
 
         //initialisation of our controller and adding the custom emotes to it.
         public static void AddAnimationClipToController(RuntimeAnimatorController baseController, string clipPath = null)
-        {
+        {        
+            //create custom emotes directory
+            if(!Directory.Exists(Paths.ConfigPath + "/BunchOfEmotes/"))
+            {
+                Directory.CreateDirectory(Paths.ConfigPath + "/BunchOfEmotes/");
+            }
+            if(!Directory.Exists(Paths.ConfigPath + "/BunchOfEmotes/replace/"))
+            {
+                Directory.CreateDirectory(Paths.ConfigPath + "/BunchOfEmotes/replace");
+            }
+
             if(clipPath == null)
             {
                 clipPath = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotes";
@@ -285,10 +295,10 @@ namespace BunchOfEmotes
             string pathinlines = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerinlines";
             string pathskateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerskateboard";
 
-            string replace = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replace";
-            string replaceBMX = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replacebmx";
-            string replaceInline = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceinline";
-            string replaceSkateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceskateboard";
+            string replace = Paths.ConfigPath + "/BunchOfEmotes/replace/replace";
+            string replaceBMX = Paths.ConfigPath + "/BunchOfEmotes/replace/replacebmx";
+            string replaceInline = Paths.ConfigPath + "/BunchOfEmotes/replace/replaceinline";
+            string replaceSkateboard = Paths.ConfigPath + "/BunchOfEmotes/replace/replaceskateboard";
             AssetBundle replaceBundle = null;
             AssetBundle replaceBundleBMX = null;
             AssetBundle replaceBundleInline = null;
@@ -500,7 +510,7 @@ namespace BunchOfEmotes
 
             string pattern = @"bunchofemotes\d";
             Regex regex = new Regex(pattern);
-            var info = new DirectoryInfo(Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bulk/");
+            var info = new DirectoryInfo(Paths.ConfigPath + "/BunchOfEmotes/");
             var fileInfo = info.GetFiles();
             foreach (var item in fileInfo)
             {
