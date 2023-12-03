@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using BunchOfEmotes.Patches;
 using System.Security.Cryptography;
@@ -102,6 +103,7 @@ namespace BunchOfEmotes
         public static Dictionary<int, string> myCustomAnimsInject = new Dictionary<int, string>(); 
 
         public DirectoryInfo AssetFolder { get; protected set; }
+        public static string BunchOfEmotesPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static bool customMenu = false;
 
@@ -116,7 +118,7 @@ namespace BunchOfEmotes
             {
                 if (myCustomAnims.Count == 0 && myAnim != null)
                 {
-                    string path = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotes";
+                    string path = BunchOfEmotesPath + "/bunchofemotes";
 
                     AddAnimationClipToController(myAnim, path);
 
@@ -280,15 +282,15 @@ namespace BunchOfEmotes
                 clipPath = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotes";
             }
 
-            string path = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontroller";
-            string pathbmx = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerbmx";
-            string pathinlines = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerinlines";
-            string pathskateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bunchofemotescontrollerskateboard";
+            string path = BunchOfEmotesPath + "/bunchofemotescontroller";
+            string pathbmx = BunchOfEmotesPath + "/bunchofemotescontrollerbmx";
+            string pathinlines = BunchOfEmotesPath + "/bunchofemotescontrollerinlines";
+            string pathskateboard = BunchOfEmotesPath + "/bunchofemotescontrollerskateboard";
 
-            string replace = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replace";
-            string replaceBMX = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replacebmx";
-            string replaceInline = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceinline";
-            string replaceSkateboard = Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/replaceskateboard";
+            string replace = BunchOfEmotesPath + "/replace";
+            string replaceBMX = BunchOfEmotesPath + "/replacebmx";
+            string replaceInline = BunchOfEmotesPath + "/replaceinline";
+            string replaceSkateboard = BunchOfEmotesPath + "/replaceskateboard";
             AssetBundle replaceBundle = null;
             AssetBundle replaceBundleBMX = null;
             AssetBundle replaceBundleInline = null;
@@ -500,7 +502,7 @@ namespace BunchOfEmotes
 
             string pattern = @"bunchofemotes\d";
             Regex regex = new Regex(pattern);
-            var info = new DirectoryInfo(Paths.PluginPath + "/Dragsun-Bunch_Of_Emotes/bulk/");
+            var info = new DirectoryInfo(BunchOfEmotesPath + "/bulk/");
             var fileInfo = info.GetFiles();
             foreach (var item in fileInfo)
             {
