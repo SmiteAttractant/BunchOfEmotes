@@ -149,8 +149,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Patches\GameplayUIPatches.cs" />
+    <Compile Include="Patches\CharacterSelectCharacterPatches.cs" />
     <Compile Include="Patches\NPCPatches.cs" />
-    <Compile Include="Patches\CharacterConstructorPatches.cs" />
     <Compile Include="Patches\SitAbilityPatch.cs" />
     <Compile Include="Patches\DieAbilityPatches.cs" />
     <Compile Include="Patches\UIPatches.cs" />
@@ -165,6 +165,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "E:\Games\Steam\steamapps\common\SubnauticaZero\BepInEx\plugins\$(TargetName)"
-xcopy /q/y/i "$(TargetPath)" "E:\Games\Steam\steamapps\common\SubnauticaZero\BepInEx\plugins\$(TargetName)" /E /H /C</PostBuildEvent>
+xcopy /q/y/i "$(TargetPath)" "C:\Users\Dragsun\AppData\Roaming\r2modmanPlus-local\BombRushCyberfunk\profiles\Default\BepInEx\plugins\Dragsun-Bunch_Of_Emotes" /E /H /C</PostBuildEvent>
   </PropertyGroup>
 </Project>
