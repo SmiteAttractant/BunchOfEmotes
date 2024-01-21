@@ -39,15 +39,51 @@ namespace BunchOfEmotes.Patches
         [HarmonyPostfix]
         public static void PlayAnim(Player __instance)
         {
-            //int childcount = __instance.transform.GetChild(0).childCount;
-            //slop crew compatibility
+            //int childcount = __instance.transform.GetChild(0).childCount; 
             bool isAi = __instance.name.Contains("AI") || __instance.name.Contains("(Clone)");
 
-            if (__instance.animatorController != BunchOfEmotesPlugin.myAnim && !isAi)
+            if (!isAi)
             {
-                __instance.animatorController = BunchOfEmotesPlugin.myAnim;
-                __instance.anim.runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                if (BunchOfEmotesPlugin.myAnimUntouched = null)
+                {
+                    BunchOfEmotesPlugin.Log.LogMessage(__instance.animatorController.name);
+                    BunchOfEmotesPlugin.myAnimUntouched = __instance.animatorController;
+                }
+
+                if (__instance.animatorController != BunchOfEmotesPlugin.myAnim)
+                {
+                    __instance.animatorController = BunchOfEmotesPlugin.myAnim;
+                    __instance.anim.runtimeAnimatorController = BunchOfEmotesPlugin.myAnim;
+                }
+                if (BunchOfEmotesPlugin.myAnimBMX != null)
+                {
+                    if (__instance.animatorControllerBMX != BunchOfEmotesPlugin.myAnimBMX)
+                    {
+                        __instance.animatorControllerBMX = BunchOfEmotesPlugin.myAnimBMX;
+                    }                    
+                }
+                if (BunchOfEmotesPlugin.myAnimInlines != null)
+                {
+                    if (__instance.animatorControllerSkates != BunchOfEmotesPlugin.myAnimInlines)
+                    {
+                        __instance.animatorControllerSkates = BunchOfEmotesPlugin.myAnimInlines;
+                    }
+                }
+                if (BunchOfEmotesPlugin.myAnimSkateboard != null)
+                {
+                    if (__instance.animatorControllerSkateboard != BunchOfEmotesPlugin.myAnimSkateboard)
+                    {
+                        __instance.animatorControllerSkateboard = BunchOfEmotesPlugin.myAnimSkateboard;
+                    }
+                }
+
             }
+            else if(__instance.name.Contains("(Clone)") && __instance.anim.runtimeAnimatorController != BunchOfEmotesPlugin.myNPC.animators[0].runtimeAnimatorController)
+            {
+                __instance.animatorController = BunchOfEmotesPlugin.myNPC.animators[0].runtimeAnimatorController;
+                __instance.anim.runtimeAnimatorController = BunchOfEmotesPlugin.myNPC.animators[0].runtimeAnimatorController;
+            }
+
 
         }
     }
