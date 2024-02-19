@@ -53,6 +53,9 @@
     <Reference Include="CustomAppAPI">
       <HintPath>..\..\..\..\games\Bomb Rush Cyberfunk\BepInEx\plugins\tari-CustomAppAPI-1.0.0\CustomAppAPI.dll</HintPath>
     </Reference>
+    <Reference Include="MapStation.API">
+      <HintPath>C:\Users\Dragsun\AppData\Roaming\r2modmanPlus-local\BombRushCyberfunk\profiles\Default\BepInEx\plugins\MapStation.Plugin.Release-0.9.2\MapStation.API.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -148,6 +151,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\StageManagerPatches.cs" />
     <Compile Include="Patches\GameplayUIPatches.cs" />
     <Compile Include="Patches\CharacterSelectCharacterPatches.cs" />
     <Compile Include="Patches\NPCPatches.cs" />
