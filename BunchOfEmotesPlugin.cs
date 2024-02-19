@@ -47,6 +47,7 @@ namespace BunchOfEmotes
         public static ConfigEntry<string> myCustomList;
         public static ConfigEntry<string> myCustomListOfInject;
         public static DieAbility dieAbility;
+        public static StageManager stageManager;
         public static bool showMenu = false;
         public static bool myVariable = true; // This is the variable you want to toggle
         public static float timer = 0.0f;
